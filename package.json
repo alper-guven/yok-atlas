@@ -1,0 +1,26 @@
+{
+  "name": "yok-atlas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "rimraf ./build && tsc",
+    "start": "npm run build && node build/app.js"
+  },
+  "keywords": [],
+  "author": "Alper Güven <alper.guven.11@gmail.com> (https://alper.codes/)",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "qs": "^6.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.6",
+    "@types/qs": "^6.9.7",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
+    "eslint": "^8.22.0",
+    "nodemon": "^2.0.19",
+    "typescript": "^4.7.4"
+  }
+}
