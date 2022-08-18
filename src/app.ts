@@ -13,11 +13,11 @@ const main = async () => {
 
     const results = await yokAtlasAPI.searchLisansTercihSihirbazi(
       {
-        puan_turu: 'say',
-        sehir_adi: 'ankara',
+        puanTuru: 'say',
+        sehirAdi: 'ankara',
         doluluk: 'Doldu',
-        ogretim_turu: 'Örgün',
-        program_adi: 'Bilgisayar Mühendisliği',
+        ogretimTuru: 'Örgün',
+        programAdi: 'Bilgisayar Mühendisliği',
       },
       {
         searchName: `Ankara'daki Sayısal Programlar`,

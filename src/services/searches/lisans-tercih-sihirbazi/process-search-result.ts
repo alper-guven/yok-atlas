@@ -1,72 +1,11 @@
-import { ValueOf } from '../types/util';
+import { ValueOf } from '../../../types/util';
 import {
   Doluluk,
   OgretimTuru,
+  SearchResultRecord,
   UcretBurs,
   UniversiteTuru,
-} from '../types/yok-atlas';
-
-/**
- * A search result is actually an <Array consisting 45 entries>.
- *
- * Some of the entries are actually html and need to be parsed.
- *  ex: <br><font color='red'>---</font><br><font color='purple'>12</font><br><font color='blue'>7</font><br><font color='green'>7</font>
- *
- * Also some of the entries are actually numbers formatted as string and need to be parsed.
- *  ex: '12' or '---' or '12.222' or '12,222'
- *
- * Others are just strings, corresponds to values like City, Program Name, etc.
- *
- * In order to make the code more readable, I created a key value map for each entry.
- * We just consume it as an Array in code. No need to map it to a Record.
- */
-export type SearchResultRecord = {
-  0: string;
-  1: string;
-  2: string;
-  3: string;
-  4: string;
-  5: string;
-  6: string;
-  7: string;
-  8: string;
-  9: string;
-  10: string;
-  11: string;
-  12: string;
-  13: string;
-  14: string;
-  15: string;
-  16: string;
-  17: string;
-  18: string;
-  19: string;
-  20: string;
-  21: string;
-  22: string;
-  23: string;
-  24: string;
-  25: string;
-  26: string;
-  27: string;
-  28: string;
-  29: string;
-  30: string;
-  31: string;
-  32: string;
-  33: string;
-  34: string;
-  35: string;
-  36: string;
-  37: string;
-  38: number;
-  39: number;
-  40: string;
-  41: string;
-  42: string;
-  43: string;
-  44: string;
-};
+} from '../../../types/yok-atlas/lisans-tercih-sihirbazi';
 
 /**
  * This is the mapping of a search result column indexes to a "custom" column names.
