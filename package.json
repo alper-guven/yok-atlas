@@ -1,24 +1,27 @@
 {
-  "name": "yok-atlas",
+  "name": "yok-atlas-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
+    "lint": "eslint",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/app.js"
   },
-  "keywords": [],
+  "keywords": [
+    "YÖK",
+    "YÖK Atlas",
+    "YÖK Atlas API",
+    "YÖK Atlas Tercih Sihirbazı"
+  ],
   "author": "Alper Güven <alper.guven.11@gmail.com> (https://alper.codes/)",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.27.2",
-    "joi": "^17.6.0",
-    "qs": "^6.11.0"
+    "joi": "^17.6.0"
   },
   "devDependencies": {
-    "@types/node": "^18.7.6",
-    "@types/qs": "^6.9.7",
     "@typescript-eslint/eslint-plugin": "^5.33.1",
     "eslint": "^8.22.0",
     "nodemon": "^2.0.19",
