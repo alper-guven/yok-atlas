@@ -9,10 +9,20 @@ import YOKAtlasAPI from './services/yok-atlas-api';
 
 const main = async () => {
   try {
-    const results = await new YOKAtlasAPI({
-      puan_turu: 'say',
-      sehir_adi: 'Ankara',
-    }).search();
+    const yokAtlasAPI = new YOKAtlasAPI();
+
+    const results = await yokAtlasAPI.searchLisansTercihSihirbazi(
+      {
+        puan_turu: 'say',
+        sehir_adi: 'ankara',
+        doluluk: 'Doldu',
+        ogretim_turu: 'Örgün',
+        program_adi: 'Bilgisayar Mühendisliği',
+      },
+      {
+        searchName: `Ankara'daki Sayısal Programlar`,
+      }
+    );
 
     for (const result of results) {
       const { yillaraGoreDegerler, ...rest } = result;
@@ -21,6 +31,10 @@ const main = async () => {
       console.log(rest);
       console.log(yillaraGoreDegerler);
     }
+
+    console.log('#################################');
+
+    console.log(yokAtlasAPI.previousSearchResults);
   } catch (error) {
     console.log(error);
     return;

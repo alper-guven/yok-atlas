@@ -1,6 +1,20 @@
 import axios from 'axios';
 import { YOK_ATLAS_ENDPOINTS } from '../config/yok-atlas-endpoints';
-import { ValueOf } from '../types/util';
+import { TurkiyeSehirIsimleri } from '../types/turkiye';
+import {
+  Doluluk,
+  OgretimTuru,
+  PuanTuru,
+  UcretBurs,
+  UniversiteTuru,
+} from '../types/yok-atlas';
+import {
+  SearchResultYOProgramInfo,
+  postProcessSearchResultRecord,
+  SearchResultRecord,
+  PostProcessError,
+} from './process-search-result';
+import Joi from 'joi';
 
 const YokAtlasAPI = axios.create({
   baseURL: 'https://yokatlas.yok.gov.tr',
@@ -36,471 +50,40 @@ const generateDefaultSearchColumn = (index: number) => {
   return searchColumn;
 };
 
-type SearchResultYOProgramInfo = {
-  programKodu: string;
-  universite: {
-    ad: string;
-    tur: 'KKTC' | 'Devlet' | 'Vakıf' | 'Yabancı';
-    sehir: string;
-  };
-  program: {
-    kod: string;
-    puanTuru: 'say' | 'söz' | 'ea' | 'dil';
-    fakulte: string;
-    ad: string;
-    ucretTuru:
-      | '%25 indirimli'
-      | '%50 indirimli'
-      | '%75 indirimli'
-      | 'AÖ_Ücretli'
-      | 'Burslu'
-      | 'UE_Ücretli'
-      | 'Ücretli'
-      | 'Ücretsiz'
-      | 'İÖ_Ücretli';
-    ogretimTuru: 'Açıköğretim' | 'Uzaktan' | 'Örgün' | 'İkinci';
-    doluluk: 'Doldu' | 'Dolmadı' | 'Yeni';
-  };
-  yillaraGoreDegerler: Array<{
-    yil: 2022 | 2021 | 2020 | 2019;
-    yerlesenKisiSayisi: 'Dolmadı' | number | null;
-    kontenjan: number | null;
-    tabanBasariSirasi: number | 'Dolmadı' | null;
-    tabanPuan: number | 'Dolmadı' | null;
-  }>;
-};
-
-const parseTabanPuan = (
-  virgulluPuan: '---' | 'Dolmadı' | `${string},${string}`
-): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['tabanPuan'] => {
-  if (virgulluPuan === '---') {
-    return null;
-  }
-
-  if (virgulluPuan === 'Dolmadı') {
-    return 'Dolmadı';
-  }
-
-  return parseFloat(virgulluPuan.replace(',', '.'));
-};
-
-const parseSiralama = (
-  noktaliSiralama: '---' | 'Dolmadı' | `${string}.${string}`
-): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['tabanBasariSirasi'] => {
-  if (noktaliSiralama === '---') {
-    return null;
-  }
-
-  if (noktaliSiralama === 'Dolmadı') {
-    return 'Dolmadı';
-  }
-
-  return parseInt(noktaliSiralama.replace('.', ''));
-};
-
-const parseYerlesen = (
-  yerlesen: `${number}` | '---'
-): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['yerlesenKisiSayisi'] => {
-  if (yerlesen === '---') {
-    return null;
-  }
-
-  return parseInt(yerlesen.replace('.', ''));
-};
-
-const parseKontenjan = (
-  kontenjan: '---' | 'Dolmadı' | `${string}.${string}`
-): number | null => {
-  if (kontenjan === '---') {
-    return null;
-  }
-
-  return parseInt(kontenjan.replace('.', ''));
-};
-
-const ResultColumnIndexCorrespondants = {
-  0: 'x--0',
-  1: 'yop_kodu',
-  2: 'uni_ve_fakulte',
-  3: 'fakulte_adi',
-  4: 'bolum_adi',
-  5: 'dil__burs__ogretim_suresi',
-  6: 'sehir_adi',
-  7: 'uni_turu',
-  8: 'ucret_burs',
-  9: 'ogretim_turu',
-
-  10: 'kontenjan_sondan_1_yil',
-  11: 'kontenjan_sondan_2_yil',
-  12: 'kontenjan_sondan_3_yil',
-  13: 'kontenjan_sondan_4_yil',
-
-  14: 'doluluk',
-
-  15: 'yerlesen_kisi_sayisi_sondan_1_yil',
-  16: 'yerlesen_kisi_sayisi_sondan_2_yil',
-  17: 'yerlesen_kisi_sayisi_sondan_3_yil',
-  18: 'yerlesen_kisi_sayisi_sondan_4_yil',
-
-  19: 'taban_basari_sirasi_sondan_1_yil',
-  20: 'taban_basari_sirasi_sondan_2_yil',
-  21: 'taban_basari_sirasi_sondan_3_yil',
-  22: 'taban_basari_sirasi_sondan_4_yil',
-
-  23: 'x--group-1-1',
-  24: 'x--group-1-2',
-  25: 'x--group-1-3',
-  26: 'x--group-1-4',
-
-  27: 'taban_puan_sondan_1_yil',
-  28: 'taban_puan_sondan_2_yil',
-  29: 'taban_puan_sondan_3_yil',
-  30: 'taban_puan_sondan_4_yil',
-
-  31: 'x--31',
-  32: 'x--32',
-  33: 'x--33',
-  34: 'son_taban_puan',
-  35: 'x--35',
-  36: 'x--36',
-  37: 'x--37',
-  38: 'x--38',
-  39: 'son_taban_basari_sirasi',
-
-  40: 'x--40',
-
-  41: 'uni_adi',
-  42: 'program_adi',
-  43: 'program_son_taban_basari_sirasi',
-
-  44: 'x--44',
-} as const;
-
-type PostProccessed_Kontenjan = number | null;
-type PostProccessed_YerlesenSayisi = 'Dolmadı' | number | null;
-type PostProccessed_TabanPuan = 'Dolmadı' | number | null;
-type PostProccessed_TabanBasariSirasi = 'Dolmadı' | number | null;
-
-type PostProccessed_Customs = {
-  yerlesen_kisi_sayisi_sondan_1_yil: PostProccessed_YerlesenSayisi;
-  yerlesen_kisi_sayisi_sondan_2_yil: PostProccessed_YerlesenSayisi;
-  yerlesen_kisi_sayisi_sondan_3_yil: PostProccessed_YerlesenSayisi;
-  yerlesen_kisi_sayisi_sondan_4_yil: PostProccessed_YerlesenSayisi;
-
-  taban_basari_sirasi_sondan_1_yil: PostProccessed_TabanBasariSirasi;
-  taban_basari_sirasi_sondan_2_yil: PostProccessed_TabanBasariSirasi;
-  taban_basari_sirasi_sondan_3_yil: PostProccessed_TabanBasariSirasi;
-  taban_basari_sirasi_sondan_4_yil: PostProccessed_TabanBasariSirasi;
-
-  taban_puan_sondan_1_yil: PostProccessed_TabanPuan;
-  taban_puan_sondan_2_yil: PostProccessed_TabanPuan;
-  taban_puan_sondan_3_yil: PostProccessed_TabanPuan;
-  taban_puan_sondan_4_yil: PostProccessed_TabanPuan;
-
-  kontenjan_sondan_1_yil: PostProccessed_Kontenjan;
-  kontenjan_sondan_2_yil: PostProccessed_Kontenjan;
-  kontenjan_sondan_3_yil: PostProccessed_Kontenjan;
-  kontenjan_sondan_4_yil: PostProccessed_Kontenjan;
-
-  uni_turu: 'KKTC' | 'Devlet' | 'Vakıf' | 'Yabancı';
-
-  ucret_burs:
-    | '%25 indirimli'
-    | '%50 indirimli'
-    | '%75 indirimli'
-    | 'AÖ_Ücretli'
-    | 'Burslu'
-    | 'UE_Ücretli'
-    | 'Ücretli'
-    | 'Ücretsiz'
-    | 'İÖ_Ücretli';
-
-  ogretim_turu: 'Açıköğretim' | 'Uzaktan' | 'Örgün' | 'İkinci';
-
-  doluluk: 'Doldu' | 'Dolmadı' | 'Yeni';
-};
-
-type PostProcessedSearchResult = {
-  [key in Exclude<
-    ResultColumnNamesUnion,
-    keyof PostProccessed_Customs
-  >]: string;
-} & PostProccessed_Customs;
-
-const postProcessConfig_TabanBasariSirasi = {
-  validate: (value: unknown) => typeof value === 'string',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform: (value: string) => parseSiralama(value as any),
-};
-
-const postProcessConfig_YerlesenSayisi = {
-  validate: (value: unknown) => typeof value === 'string',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform: (value: string) => parseYerlesen(value as any),
-};
-
-const postProcessConfig_TabanPuan = {
-  validate: (value: unknown) => typeof value === 'string',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform: (value: string) => parseTabanPuan(value as any),
-};
-
-const postProcessConfig_Kontenjan = {
-  validate: (value: unknown) => typeof value === 'string',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform: (value: string) => parseKontenjan(value as any),
-};
-
-// Api returns three of the columns with numbers as html so need to parse them.
-// ex: <br><font color='red'>---</font><br><font color='purple'>12</font><br><font color='blue'>7</font><br><font color='green'>7</font>
-const extractStandardNumberValue = (html: string) => {
-  const yerlesenNumberMatches = html.match(/>[0-9]{1,3}|(---)?<\/font></);
-
-  if (!yerlesenNumberMatches) return null;
-
-  const yerlesenNumber = yerlesenNumberMatches[1];
-
-  if (yerlesenNumber == null) return null;
-
-  return yerlesenNumber;
-};
-
-interface PostProcessConfig<key extends keyof PostProcessedSearchResult> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  extractValuePrePostProcess?: (value: any) => any;
-  validate?: (value: unknown) => boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transform?: (value: any) => PostProcessedSearchResult[key];
-}
-
-const ResultPostProcessors: {
-  [key in Exclude<
-    ResultColumnNamesUnion,
-    keyof PostProccessed_Customs
-  >]?: PostProcessConfig<key>;
-} & {
-  [key in keyof PostProccessed_Customs]: PostProcessConfig<key>;
-} = {
-  yop_kodu: {
-    extractValuePrePostProcess: (html: string): string | null => {
-      const yopkODUMatches = html.match(/javascript:listeyeEkle\(([0-9]+)\)/);
-
-      if (!yopkODUMatches) return null;
-
-      const yopkODU = yopkODUMatches[1];
-
-      if (yopkODU == null) return null;
-
-      return yopkODU;
-    },
-    validate: (value: unknown) => typeof value === 'string',
-    transform: (value: string) => value,
-  },
-
-  uni_turu: {
-    validate: (value: unknown) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ['KKTC', 'Devlet', 'Vakıf', 'Yabancı'].includes(value as any),
-  },
-
-  ucret_burs: {
-    validate: (value: unknown) =>
-      [
-        '%25 indirimli',
-        '%50 indirimli',
-        '%75 indirimli',
-        'AÖ_Ücretli',
-        'Burslu',
-        'UE_Ücretli',
-        'Ücretli',
-        'Ücretsiz',
-        'İÖ_Ücretli',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ].includes(value as any),
-  },
-
-  ogretim_turu: {
-    validate: (value: unknown) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ['Açıköğretim', 'Uzaktan', 'Örgün', 'İkinci'].includes(value as any),
-  },
-
-  doluluk: {
-    validate: (value: unknown) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ['Doldu', 'Dolmadı', 'Yeni'].includes(value as any),
-  },
-
-  taban_basari_sirasi_sondan_1_yil: {
-    extractValuePrePostProcess: extractStandardNumberValue,
-    ...postProcessConfig_TabanBasariSirasi,
-  },
-  taban_basari_sirasi_sondan_2_yil: postProcessConfig_TabanBasariSirasi,
-  taban_basari_sirasi_sondan_3_yil: postProcessConfig_TabanBasariSirasi,
-  taban_basari_sirasi_sondan_4_yil: postProcessConfig_TabanBasariSirasi,
-
-  yerlesen_kisi_sayisi_sondan_1_yil: {
-    extractValuePrePostProcess: extractStandardNumberValue,
-    ...postProcessConfig_YerlesenSayisi,
-  },
-  yerlesen_kisi_sayisi_sondan_2_yil: postProcessConfig_YerlesenSayisi,
-  yerlesen_kisi_sayisi_sondan_3_yil: postProcessConfig_YerlesenSayisi,
-  yerlesen_kisi_sayisi_sondan_4_yil: postProcessConfig_YerlesenSayisi,
-
-  taban_puan_sondan_1_yil: {
-    extractValuePrePostProcess: extractStandardNumberValue,
-    ...postProcessConfig_TabanPuan,
-  },
-  taban_puan_sondan_2_yil: postProcessConfig_TabanPuan,
-  taban_puan_sondan_3_yil: postProcessConfig_TabanPuan,
-  taban_puan_sondan_4_yil: postProcessConfig_TabanPuan,
-
-  kontenjan_sondan_1_yil: {
-    extractValuePrePostProcess: (html: string) => {
-      const kontenjanNumberMatches = html.match(/\d{0,1000}[+]\d{0,10}/);
-
-      if (!kontenjanNumberMatches) return null;
-
-      const kontenjanNumber = kontenjanNumberMatches[0];
-
-      if (kontenjanNumber == null) return null;
-
-      return kontenjanNumber;
-    },
-    ...postProcessConfig_Kontenjan,
-  },
-  kontenjan_sondan_2_yil: postProcessConfig_Kontenjan,
-  kontenjan_sondan_3_yil: postProcessConfig_Kontenjan,
-  kontenjan_sondan_4_yil: postProcessConfig_Kontenjan,
-};
-
-const createKeyValueMap = (record: SearchResultRecord) => {
-  const keyValueMap = Object.entries(record).reduce((acc, [key, val]) => {
-    const keyName =
-      ResultColumnIndexCorrespondants[
-        key as unknown as keyof typeof ResultColumnIndexCorrespondants
-      ];
-
-    acc[keyName] = val;
-    return acc;
-  }, {} as Record<ResultColumnNamesUnion, string | number | null>);
-
-  return keyValueMap;
-};
-
-const postProcessSearchResultRecord = (
-  record: SearchResultRecord
-): PostProcessedSearchResult => {
-  const result = createKeyValueMap(record);
-
-  for (const [key, postProcessCFG] of Object.entries(ResultPostProcessors)) {
-    if (postProcessCFG == null) continue;
-
-    if (postProcessCFG.extractValuePrePostProcess) {
-      const extractionResult = postProcessCFG.extractValuePrePostProcess(
-        result[key as keyof typeof result]
-      );
-
-      result[key as keyof typeof result] = extractionResult;
-    }
-
-    if (postProcessCFG.validate) {
-      const validationResult = postProcessCFG.validate(
-        result[key as keyof typeof result]
-      );
-
-      if (!validationResult) {
-        throw new Error(`Validation of <${key}> failed`);
-      }
-    }
-
-    if (postProcessCFG.transform) {
-      const transformationResult = postProcessCFG.transform(
-        result[key as keyof typeof result]
-      );
-
-      result[key as keyof typeof result] = transformationResult;
-    }
-  }
-
-  return result as PostProcessedSearchResult;
-};
-
-const ResultColumnIndexByName = Object.entries(
-  ResultColumnIndexCorrespondants
-).reduce(
-  (acc, [key, value]) => ({ ...acc, [value.toString()]: Number(key) }),
-  {} as Record<ValueOf<typeof ResultColumnIndexCorrespondants>, number>
-);
-
-const resultColumnNames = Object.keys(ResultColumnIndexByName) as Array<
-  keyof typeof ResultColumnIndexByName
->;
-
-type ResultColumnNamesUnion = typeof resultColumnNames[number];
-
-type SearchResultRecord = {
-  0: string;
-  1: string;
-  2: string;
-  3: string;
-  4: string;
-  5: string;
-  6: string;
-  7: string;
-  8: string;
-  9: string;
-  10: string;
-  11: string;
-  12: string;
-  13: string;
-  14: string;
-  15: string;
-  16: string;
-  17: string;
-  18: string;
-  19: string;
-  20: string;
-  21: string;
-  22: string;
-  23: string;
-  24: string;
-  25: string;
-  26: string;
-  27: string;
-  28: string;
-  29: string;
-  30: string;
-  31: string;
-  32: string;
-  33: string;
-  34: string;
-  35: string;
-  36: string;
-  37: string;
-  38: number;
-  39: number;
-  40: string;
-  41: string;
-  42: string;
-  43: string;
-  44: string;
-};
-
 // type StandardColumnSearchQuery = typeof standardColumn;
 
 export type YOKAtlasSearchParamsConfig = Partial<{
   yop_kodu: string;
   uni_adi: string;
   program_adi: string;
-  sehir_adi: string;
-  universite_turu: string;
-  ucret_burs: string;
-  ogretim_turu: string;
-  doluluk: string;
+  sehir_adi:
+    | TurkiyeSehirIsimleri
+    | Uppercase<TurkiyeSehirIsimleri>
+    | Lowercase<TurkiyeSehirIsimleri>
+    | `KKTC-${string}`;
+  universite_turu: UniversiteTuru;
+  ucret_burs: UcretBurs;
+  ogretim_turu: OgretimTuru;
+  doluluk: Doluluk;
 }> & {
-  puan_turu: 'say' | 'söz' | 'ea' | 'dil';
+  puan_turu: PuanTuru;
 };
+
+const SearchParamsValidationSchema = Joi.object<YOKAtlasSearchParamsConfig>()
+  .keys({
+    // Optional Params
+    yop_kodu: Joi.string().optional(),
+    uni_adi: Joi.string().optional(),
+    program_adi: Joi.string().optional(),
+    sehir_adi: Joi.string().optional(),
+    universite_turu: Joi.string().optional(),
+    ucret_burs: Joi.string().optional(),
+    ogretim_turu: Joi.string().optional(),
+    doluluk: Joi.string().optional(),
+    // Required params
+    puan_turu: Joi.string().required(),
+  })
+  .required();
 
 type ConfigSearchParams = keyof YOKAtlasSearchParamsConfig;
 
@@ -531,16 +114,51 @@ const defaultNonColumnSearchParams = {
   'search[regex]': false,
 } as const;
 
+interface YokAtlas_LisansTercihSihirbazi_SearchResult {
+  data: Array<SearchResultRecord>;
+}
+
+type PreviousSearchResult = {
+  searchType: 'lisans-tercih-sihirbazi';
+  details: {
+    name: string;
+    searchParams: YOKAtlasSearchParamsConfig;
+    searchResults: Array<SearchResultYOProgramInfo>;
+  };
+};
+
+type YOKAtlasAPI_SearchResults_Union = PreviousSearchResult;
+
+type FailedSearchResult = {
+  searchType: 'lisans-tercih-sihirbazi';
+  failReason: 'request-failed' | 'post-process-failed';
+  details: {
+    name: string;
+    searchParams: YOKAtlasSearchParamsConfig;
+    searchResult: YokAtlas_LisansTercihSihirbazi_SearchResult | null;
+  };
+};
+
+type YOKAtlasAPI_SearchResults_Failed_Union = FailedSearchResult;
+
 class YOKAtlasAPI {
-  columns: URLSearchParams;
+  previousSearchResults: Array<YOKAtlasAPI_SearchResults_Union> = [];
+  failedSearchResults: Array<YOKAtlasAPI_SearchResults_Failed_Union> = [];
 
-  private _searchParamsConfig: YOKAtlasSearchParamsConfig;
+  private validateSearchParams(
+    searchParams: YOKAtlasSearchParamsConfig
+  ): YOKAtlasSearchParamsConfig {
+    const { error, value } =
+      SearchParamsValidationSchema.validate(searchParams);
 
-  constructor(searchParamsConfig: YOKAtlasSearchParamsConfig) {
-    // this.columns = new URLSearchParams(columnData[0]);
+    if (error) {
+      throw new Error(error.message);
+    }
 
-    this._searchParamsConfig = searchParamsConfig;
+    return value;
+  }
 
+  private createSearchPayload(searchParamsConfig: YOKAtlasSearchParamsConfig) {
     const defaultSearchColumnsParams = [...Array(45)].reduce(
       (acc: Record<string, string>, _, index) => {
         return {
@@ -551,70 +169,60 @@ class YOKAtlasAPI {
       {} as Record<string, string>
     );
 
-    this.columns = new URLSearchParams({
+    const columns = new URLSearchParams({
       ...defaultSearchColumnsParams,
     } as const);
 
-    // Object.keys(columnVars).forEach((key) => {
-    //   if (_[key]) {
-    //     this.columns.set(`columns[${columnVars[key]}][search][value]`, _[key]);
-    //   }
-    // });
-
-    this.columns.set('puan_turu', searchParamsConfig.puan_turu);
+    columns.set('puan_turu', searchParamsConfig.puan_turu);
 
     // Fill search params with search params config
     for (const [key, value] of Object.entries(columnIndexes)) {
       const configValueForKey = searchParamsConfig[key as ConfigSearchParams];
 
       if (configValueForKey) {
-        this.columns.set(`columns[${value}][search][value]`, configValueForKey);
+        columns.set(`columns[${value}][search][value]`, configValueForKey);
       }
     }
 
-    Object.keys(defaultNonColumnSearchParams).forEach((key) => {
+    for (const key of Object.keys(defaultNonColumnSearchParams) as Array<
+      keyof typeof defaultNonColumnSearchParams
+    >) {
       const configValueForKey = searchParamsConfig[key as ConfigSearchParams];
 
-      if (!configValueForKey)
-        return this.columns.append(
+      if (!configValueForKey) {
+        columns.append(
           key,
           defaultNonColumnSearchParams[
             key as keyof typeof defaultNonColumnSearchParams
           ].toString()
         );
 
+        continue;
+      }
+
       if (key === 'puan_turu') {
-        if (
-          configValueForKey === 'dil' ||
-          configValueForKey === 'ea' ||
-          configValueForKey === 'söz' ||
-          configValueForKey === 'say'
-        ) {
-          this.columns.append(key, configValueForKey);
-        } else {
-          this.columns.append(key, defaultNonColumnSearchParams[key]);
-        }
-        return;
+        columns.append(key, configValueForKey);
+        continue;
       }
 
       if (key === 'search') {
-        this.columns.append(
-          'search[value]',
-          configValueForKey ? configValueForKey : ''
-        );
-        this.columns.append('search[regex]', 'false');
-        return;
+        columns.append('search[value]', configValueForKey || '');
+        columns.append('search[regex]', 'false');
+        continue;
       }
 
-      this.columns.append(key, configValueForKey);
-    });
+      columns.append(key, configValueForKey);
+    }
+
+    return columns;
   }
 
-  parseResults({
-    data,
-  }: {
+  private parseResults(parseConfig: {
     data: Array<SearchResultRecord>;
+    searchParamsConfig: YOKAtlasSearchParamsConfig;
   }): Array<SearchResultYOProgramInfo> {
+    const { data, searchParamsConfig } = parseConfig;
+
     return data.map((e) => {
       const processedRecord = postProcessSearchResultRecord(e);
 
@@ -627,7 +235,7 @@ class YOKAtlasAPI {
         },
         program: {
           kod: processedRecord.yop_kodu,
-          puanTuru: this._searchParamsConfig['puan_turu'],
+          puanTuru: searchParamsConfig['puan_turu'],
           fakulte: processedRecord.fakulte_adi,
           ad: processedRecord.program_adi,
           ucretTuru: processedRecord.ucret_burs,
@@ -674,10 +282,10 @@ class YOKAtlasAPI {
     });
   }
 
-  private async actuallySearch() {
-    return YokAtlasAPI.post<{ data: Array<SearchResultRecord> }>(
+  private async actuallySearch(urlSearchParams: URLSearchParams) {
+    return YokAtlasAPI.post<YokAtlas_LisansTercihSihirbazi_SearchResult>(
       YOK_ATLAS_ENDPOINTS.LisansTercihSihirbazi,
-      this.columns.toString(),
+      urlSearchParams.toString(),
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -700,10 +308,75 @@ class YOKAtlasAPI {
       });
   }
 
-  async search() {
-    const data = await this.actuallySearch();
-    const results = this.parseResults(data);
-    return results;
+  async searchLisansTercihSihirbazi(
+    searchParamsConfig: YOKAtlasSearchParamsConfig,
+    searchIdentityConfig?: {
+      searchName: string;
+    }
+  ): Promise<Array<SearchResultYOProgramInfo>> {
+    // Save search results to previous searches
+    const _searchName = searchIdentityConfig
+      ? searchIdentityConfig.searchName
+      : null;
+
+    const searchName =
+      _searchName ||
+      `search-${this.previousSearchResults.length + 1}-${Date.now()}`;
+
+    let searchResult: YokAtlas_LisansTercihSihirbazi_SearchResult | null = null;
+
+    try {
+      const validatedSearchParamsConfig =
+        this.validateSearchParams(searchParamsConfig);
+
+      const config = this.createSearchPayload(validatedSearchParamsConfig);
+
+      searchResult = await this.actuallySearch(config).catch((error) => {
+        this.failedSearchResults.push({
+          searchType: 'lisans-tercih-sihirbazi',
+          failReason: 'request-failed',
+          details: {
+            name: searchName,
+            searchParams: searchParamsConfig,
+            searchResult: null,
+          },
+        });
+
+        throw error;
+      });
+
+      const results = this.parseResults({
+        data: searchResult.data,
+        searchParamsConfig: searchParamsConfig,
+      });
+
+      this.previousSearchResults.push({
+        searchType: 'lisans-tercih-sihirbazi',
+        details: {
+          name: searchName,
+          searchParams: searchParamsConfig,
+          searchResults: results,
+        },
+      });
+
+      return results;
+    } catch (error) {
+      if (error instanceof PostProcessError && searchResult) {
+        this.failedSearchResults.push({
+          searchType: 'lisans-tercih-sihirbazi',
+          failReason: 'post-process-failed',
+          details: {
+            name: searchName,
+            searchParams: searchParamsConfig,
+            searchResult: searchResult,
+          },
+        });
+
+        throw error;
+      }
+
+      throw error;
+    }
   }
 }
 
