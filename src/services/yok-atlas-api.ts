@@ -1,29 +1,18 @@
 import axios from 'axios';
-import qs from 'qs';
+import { YOK_ATLAS_ENDPOINTS } from '../config/yok-atlas-endpoints';
+import { ValueOf } from '../types/util';
 
-const columnData = [
-  'columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=false&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=false&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=false&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=false&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=7&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=false&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=8&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=false&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B9%5D%5Bdata%5D=9&columns%5B9%5D%5Bname%5D=&columns%5B9%5D%5Bsearchable%5D=true&columns%5B9%5D%5Borderable%5D=false&columns%5B9%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B9%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B10%5D%5Bdata%5D=10&columns%5B10%5D%5Bname%5D=&columns%5B10%5D%5Bsearchable%5D=true&columns%5B10%5D%5Borderable%5D=false&columns%5B10%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B10%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B11%5D%5Bdata%5D=11&columns%5B11%5D%5Bname%5D=&columns%5B11%5D%5Bsearchable%5D=true&columns%5B11%5D%5Borderable%5D=true&columns%5B11%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B11%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B12%5D%5Bdata%5D=12&columns%5B12%5D%5Bname%5D=&columns%5B12%5D%5Bsearchable%5D=true&columns%5B12%5D%5Borderable%5D=true&columns%5B12%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B12%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B13%5D%5Bdata%5D=13&columns%5B13%5D%5Bname%5D=&columns%5B13%5D%5Bsearchable%5D=true&columns%5B13%5D%5Borderable%5D=true&columns%5B13%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B13%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B14%5D%5Bdata%5D=14&columns%5B14%5D%5Bname%5D=&columns%5B14%5D%5Bsearchable%5D=true&columns%5B14%5D%5Borderable%5D=false&columns%5B14%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B14%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B15%5D%5Bdata%5D=15&columns%5B15%5D%5Bname%5D=&columns%5B15%5D%5Bsearchable%5D=true&columns%5B15%5D%5Borderable%5D=false&columns%5B15%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B15%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B16%5D%5Bdata%5D=16&columns%5B16%5D%5Bname%5D=&columns%5B16%5D%5Bsearchable%5D=true&columns%5B16%5D%5Borderable%5D=true&columns%5B16%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B16%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B17%5D%5Bdata%5D=17&columns%5B17%5D%5Bname%5D=&columns%5B17%5D%5Bsearchable%5D=true&columns%5B17%5D%5Borderable%5D=true&columns%5B17%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B17%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B18%5D%5Bdata%5D=18&columns%5B18%5D%5Bname%5D=&columns%5B18%5D%5Bsearchable%5D=true&columns%5B18%5D%5Borderable%5D=true&columns%5B18%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B18%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B19%5D%5Bdata%5D=19&columns%5B19%5D%5Bname%5D=&columns%5B19%5D%5Bsearchable%5D=true&columns%5B19%5D%5Borderable%5D=true&columns%5B19%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B19%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B20%5D%5Bdata%5D=20&columns%5B20%5D%5Bname%5D=&columns%5B20%5D%5Bsearchable%5D=true&columns%5B20%5D%5Borderable%5D=true&columns%5B20%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B20%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B21%5D%5Bdata%5D=21&columns%5B21%5D%5Bname%5D=&columns%5B21%5D%5Bsearchable%5D=true&columns%5B21%5D%5Borderable%5D=true&columns%5B21%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B21%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B22%5D%5Bdata%5D=22&columns%5B22%5D%5Bname%5D=&columns%5B22%5D%5Bsearchable%5D=true&columns%5B22%5D%5Borderable%5D=true&columns%5B22%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B22%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B23%5D%5Bdata%5D=23&columns%5B23%5D%5Bname%5D=&columns%5B23%5D%5Bsearchable%5D=true&columns%5B23%5D%5Borderable%5D=true&columns%5B23%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B23%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B24%5D%5Bdata%5D=24&columns%5B24%5D%5Bname%5D=&columns%5B24%5D%5Bsearchable%5D=true&columns%5B24%5D%5Borderable%5D=true&columns%5B24%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B24%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B25%5D%5Bdata%5D=25&columns%5B25%5D%5Bname%5D=&columns%5B25%5D%5Bsearchable%5D=true&columns%5B25%5D%5Borderable%5D=true&columns%5B25%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B25%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B26%5D%5Bdata%5D=26&columns%5B26%5D%5Bname%5D=&columns%5B26%5D%5Bsearchable%5D=true&columns%5B26%5D%5Borderable%5D=true&columns%5B26%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B26%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B27%5D%5Bdata%5D=27&columns%5B27%5D%5Bname%5D=&columns%5B27%5D%5Bsearchable%5D=true&columns%5B27%5D%5Borderable%5D=true&columns%5B27%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B27%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B28%5D%5Bdata%5D=28&columns%5B28%5D%5Bname%5D=&columns%5B28%5D%5Bsearchable%5D=true&columns%5B28%5D%5Borderable%5D=true&columns%5B28%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B28%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B29%5D%5Bdata%5D=29&columns%5B29%5D%5Bname%5D=&columns%5B29%5D%5Bsearchable%5D=true&columns%5B29%5D%5Borderable%5D=true&columns%5B29%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B29%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B30%5D%5Bdata%5D=30&columns%5B30%5D%5Bname%5D=&columns%5B30%5D%5Bsearchable%5D=true&columns%5B30%5D%5Borderable%5D=true&columns%5B30%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B30%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B31%5D%5Bdata%5D=31&columns%5B31%5D%5Bname%5D=&columns%5B31%5D%5Bsearchable%5D=true&columns%5B31%5D%5Borderable%5D=true&columns%5B31%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B31%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B32%5D%5Bdata%5D=32&columns%5B32%5D%5Bname%5D=&columns%5B32%5D%5Bsearchable%5D=true&columns%5B32%5D%5Borderable%5D=true&columns%5B32%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B32%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B33%5D%5Bdata%5D=33&columns%5B33%5D%5Bname%5D=&columns%5B33%5D%5Bsearchable%5D=true&columns%5B33%5D%5Borderable%5D=true&columns%5B33%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B33%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B34%5D%5Bdata%5D=34&columns%5B34%5D%5Bname%5D=&columns%5B34%5D%5Bsearchable%5D=true&columns%5B34%5D%5Borderable%5D=true&columns%5B34%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B34%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B35%5D%5Bdata%5D=35&columns%5B35%5D%5Bname%5D=&columns%5B35%5D%5Bsearchable%5D=true&columns%5B35%5D%5Borderable%5D=true&columns%5B35%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B35%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B36%5D%5Bdata%5D=36&columns%5B36%5D%5Bname%5D=&columns%5B36%5D%5Bsearchable%5D=true&columns%5B36%5D%5Borderable%5D=true&columns%5B36%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B36%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B37%5D%5Bdata%5D=37&columns%5B37%5D%5Bname%5D=&columns%5B37%5D%5Bsearchable%5D=true&columns%5B37%5D%5Borderable%5D=true&columns%5B37%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B37%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B38%5D%5Bdata%5D=38&columns%5B38%5D%5Bname%5D=&columns%5B38%5D%5Bsearchable%5D=true&columns%5B38%5D%5Borderable%5D=true&columns%5B38%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B38%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B39%5D%5Bdata%5D=39&columns%5B39%5D%5Bname%5D=&columns%5B39%5D%5Bsearchable%5D=true&columns%5B39%5D%5Borderable%5D=true&columns%5B39%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B39%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B40%5D%5Bdata%5D=40&columns%5B40%5D%5Bname%5D=&columns%5B40%5D%5Bsearchable%5D=true&columns%5B40%5D%5Borderable%5D=true&columns%5B40%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B40%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B41%5D%5Bdata%5D=41&columns%5B41%5D%5Bname%5D=&columns%5B41%5D%5Bsearchable%5D=true&columns%5B41%5D%5Borderable%5D=true&columns%5B41%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B41%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B42%5D%5Bdata%5D=42&columns%5B42%5D%5Bname%5D=&columns%5B42%5D%5Bsearchable%5D=true&columns%5B42%5D%5Borderable%5D=true&columns%5B42%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B42%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B43%5D%5Bdata%5D=43&columns%5B43%5D%5Bname%5D=&columns%5B43%5D%5Bsearchable%5D=true&columns%5B43%5D%5Borderable%5D=true&columns%5B43%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B43%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B44%5D%5Bdata%5D=44&columns%5B44%5D%5Bname%5D=&columns%5B44%5D%5Bsearchable%5D=true&columns%5B44%5D%5Borderable%5D=true&columns%5B44%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B44%5D%5Bsearch%5D%5Bregex%5D=false',
-];
+const YokAtlasAPI = axios.create({
+  baseURL: 'https://yokatlas.yok.gov.tr',
+  timeout: 10_000,
+});
 
-const standardColumn = {
-  'columns[0][data]': 0,
-  'columns[0][name]': '',
-  'columns[0][searchable]': true,
-  'columns[0][orderable]': false,
-  'columns[0][search][value]': '',
-  'columns[0][search][regex]': false,
-};
-
-const searchColumnDefaultValues = {
-  data: 0,
-  name: '',
-  searchable: true,
-  orderable: false,
-  search: {
-    value: '',
-    regex: false,
-  },
-};
+// const getLisansPanelInstance = (year: 2019 | 2020 | 2021) => {
+//   return axios.create({
+//     url: `https://yokatlas.yok.gov.tr/${year}/lisans-panel.php`,
+//     timeout: 10_000,
+//   });
+// };
 
 const generateDefaultSearchColumn = (index: number) => {
   const keyNames = {
@@ -37,62 +26,463 @@ const generateDefaultSearchColumn = (index: number) => {
 
   const searchColumn = {
     [keyNames.data]: index,
-    [keyNames.name]: searchColumnDefaultValues.name,
-    [keyNames.searchable]: searchColumnDefaultValues.searchable,
-    [keyNames.orderable]: searchColumnDefaultValues.orderable,
-    [keyNames.search]: searchColumnDefaultValues.search.value,
-    [keyNames.regex]: searchColumnDefaultValues.search.regex,
+    [keyNames.name]: '',
+    [keyNames.searchable]: true,
+    [keyNames.orderable]: false,
+    [keyNames.search]: '',
+    [keyNames.regex]: false,
   };
 
   return searchColumn;
 };
 
-const searchResultRecord = {
-  '0': '',
-  '1': "<a href='lisans.php?y=203910363' target='_blank'>203910363</a><br>\r\n\t\t\t\t\t\t<a href='content/lightbox/akredite.php?y=203910363' data-featherlight='ajax'><img src='assets/img/flag_akredite.png' height='16'></a><br><span class='ekle203910363'><a href='javascript:listeyeEkle(203910363)'><br><span class='fa fa-plus-circle'></span> Listeme Ekle</span></a><br>",
-  '2': "<strong>KOÇ ÜNİVERSİTESİ </strong>&nbsp;<br><font color='#CC0000'>Mühendislik Fakültesi</font><br><br><a href='externalAppParameter.php?y=203910363' target='_blank'><font color='#CC0000'><span class='fa fa-users'></span> Akademik Kadro</font></a>",
-  '3': 'Mühendislik Fakültesi',
-  '4': "<strong>Bilgisayar Mühendisliği</strong>&nbsp;\r\n\t\t\t\t<a href='content/lightbox/kosullar-lisans.php?y=203910363' data-featherlight='ajax'><img src='assets/img/kosullar.png' height='12'></a>&nbsp;<a href='content/lightbox/limit.php?l=1' data-featherlight='ajax'><img src='assets/img/flag_limit2.png' height='12'></a><br><font color='#CC0000'>(İngilizce) (Burslu) (4 Yıllık)</font>",
-  '5': '(İngilizce) (Burslu) (4 Yıllık)',
-  '6': 'İSTANBUL ',
-  '7': 'Vakıf',
-  '8': 'Burslu',
-  '9': 'Örgün',
-  '10': "<br><font color='red'>16+0</font><br><font color='purple'>15+0</font><br><font color='blue'>15+0</font><br><font color='green'>9+0</font>",
-  '11': '15+0',
-  '12': '15+0',
-  '13': '9+0',
-  '14': 'Doldu',
-  '15': "<br><font color='red'>---</font><br><font color='purple'>15</font><br><font color='blue'>15</font><br><font color='green'>9</font>",
-  '16': '15',
-  '17': '15',
-  '18': '9',
-  '19': "<br><font color='red'>---</font><br><font color='purple'>221</font><br><font color='blue'>397</font><br><font color='green'>281</font>",
-  '20': '221',
-  '21': '397',
-  '22': '281',
-  '23': "<br>---<br><font color='purple'>---</font><br><font color='blue'>---</font><br><font color='green'>---</font>",
-  '24': '---',
-  '25': '---',
-  '26': '---',
-  '27': "<br><font color='red'>---</font><br><font color='purple'>525,61359</font><br><font color='blue'>545,38069</font><br><font color='green'>541,51566</font>",
-  '28': '525,61359',
-  '29': '545,38069',
-  '30': '541,51566',
-  '31': null,
-  '32': '1',
-  '33': '1',
-  '34': '525,61359',
-  '35': null,
-  '36': null,
-  '37': '---',
-  '38': 0,
-  '39': 221,
-  '40': '118853|118859|158366',
-  '41': 'KOÇ ÜNİVERSİTESİ ',
-  '42': 'Bilgisayar Mühendisliği',
-  '43': '221',
-  '44': '---',
+type SearchResultYOProgramInfo = {
+  universite: {
+    ad: string;
+    tur: 'KKTC' | 'Devlet' | 'Vakıf' | 'Yabancı';
+    sehir: string;
+  };
+  program: {
+    kod: string;
+    fakulte: string;
+    ad: string;
+    ucretTuru:
+      | '%25 indirimli'
+      | '%50 indirimli'
+      | '%75 indirimli'
+      | 'AÖ_Ücretli'
+      | 'Burslu'
+      | 'UE_Ücretli'
+      | 'Ücretli'
+      | 'Ücretsiz'
+      | 'İÖ_Ücretli';
+    ogretimTuru: 'Açıköğretim' | 'Uzaktan' | 'Örgün' | 'İkinci';
+    doluluk: 'Doldu' | 'Dolmadı' | 'Yeni';
+  };
+  yillaraGoreDegerler: Array<{
+    yil: 2022 | 2021 | 2020 | 2019;
+    yerlesenKisiSayisi: 'Dolmadı' | number | null;
+    kontenjan: number | null;
+    tabanBasariSirasi: number | 'Dolmadı' | null;
+    tabanPuan: number | 'Dolmadı' | null;
+  }>;
+};
+
+const parseTabanPuan = (
+  virgulluPuan: '---' | 'Dolmadı' | `${string},${string}`
+): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['tabanPuan'] => {
+  if (virgulluPuan === '---') {
+    return null;
+  }
+
+  if (virgulluPuan === 'Dolmadı') {
+    return 'Dolmadı';
+  }
+
+  return parseFloat(virgulluPuan.replace(',', '.'));
+};
+
+const parseSiralama = (
+  noktaliSiralama: '---' | 'Dolmadı' | `${string}.${string}`
+): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['tabanBasariSirasi'] => {
+  if (noktaliSiralama === '---') {
+    return null;
+  }
+
+  if (noktaliSiralama === 'Dolmadı') {
+    return 'Dolmadı';
+  }
+
+  return parseInt(noktaliSiralama.replace('.', ''));
+};
+
+const parseYerlesen = (
+  yerlesen: `${number}` | '---'
+): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['yerlesenKisiSayisi'] => {
+  if (yerlesen === '---') {
+    return null;
+  }
+
+  return parseInt(yerlesen.replace('.', ''));
+};
+
+const parseKontenjan = (
+  kontenjan: '---' | 'Dolmadı' | `${string}.${string}`
+): number | null => {
+  if (kontenjan === '---') {
+    return null;
+  }
+
+  return parseInt(kontenjan.replace('.', ''));
+};
+
+const ResultColumnIndexCorrespondants = {
+  0: 'x--0',
+  1: 'yop_kodu',
+  2: 'uni_ve_fakulte',
+  3: 'fakulte_adi',
+  4: 'bolum_adi',
+  5: 'dil__burs__ogretim_suresi',
+  6: 'sehir_adi',
+  7: 'uni_turu',
+  8: 'ucret_burs',
+  9: 'ogretim_turu',
+
+  10: 'kontenjan_sondan_1_yil',
+  11: 'kontenjan_sondan_2_yil',
+  12: 'kontenjan_sondan_3_yil',
+  13: 'kontenjan_sondan_4_yil',
+
+  14: 'doluluk',
+
+  15: 'yerlesen_kisi_sayisi_sondan_1_yil',
+  16: 'yerlesen_kisi_sayisi_sondan_2_yil',
+  17: 'yerlesen_kisi_sayisi_sondan_3_yil',
+  18: 'yerlesen_kisi_sayisi_sondan_4_yil',
+
+  19: 'taban_basari_sirasi_sondan_1_yil',
+  20: 'taban_basari_sirasi_sondan_2_yil',
+  21: 'taban_basari_sirasi_sondan_3_yil',
+  22: 'taban_basari_sirasi_sondan_4_yil',
+
+  23: 'x--group-1-1',
+  24: 'x--group-1-2',
+  25: 'x--group-1-3',
+  26: 'x--group-1-4',
+
+  27: 'taban_puan_sondan_1_yil',
+  28: 'taban_puan_sondan_2_yil',
+  29: 'taban_puan_sondan_3_yil',
+  30: 'taban_puan_sondan_4_yil',
+
+  31: 'x--31',
+  32: 'x--32',
+  33: 'x--33',
+  34: 'son_taban_puan',
+  35: 'x--35',
+  36: 'x--36',
+  37: 'x--37',
+  38: 'x--38',
+  39: 'son_taban_basari_sirasi',
+
+  40: 'x--40',
+
+  41: 'uni_adi',
+  42: 'program_adi',
+  43: 'program_son_taban_basari_sirasi',
+
+  44: 'x--44',
+} as const;
+
+type PostProccessed_Kontenjan = number | null;
+type PostProccessed_YerlesenSayisi = 'Dolmadı' | number | null;
+type PostProccessed_TabanPuan = 'Dolmadı' | number | null;
+type PostProccessed_TabanBasariSirasi = 'Dolmadı' | number | null;
+
+type PostProccessed_Customs = {
+  yerlesen_kisi_sayisi_sondan_1_yil: PostProccessed_YerlesenSayisi;
+  yerlesen_kisi_sayisi_sondan_2_yil: PostProccessed_YerlesenSayisi;
+  yerlesen_kisi_sayisi_sondan_3_yil: PostProccessed_YerlesenSayisi;
+  yerlesen_kisi_sayisi_sondan_4_yil: PostProccessed_YerlesenSayisi;
+
+  taban_basari_sirasi_sondan_1_yil: PostProccessed_TabanBasariSirasi;
+  taban_basari_sirasi_sondan_2_yil: PostProccessed_TabanBasariSirasi;
+  taban_basari_sirasi_sondan_3_yil: PostProccessed_TabanBasariSirasi;
+  taban_basari_sirasi_sondan_4_yil: PostProccessed_TabanBasariSirasi;
+
+  taban_puan_sondan_1_yil: PostProccessed_TabanPuan;
+  taban_puan_sondan_2_yil: PostProccessed_TabanPuan;
+  taban_puan_sondan_3_yil: PostProccessed_TabanPuan;
+  taban_puan_sondan_4_yil: PostProccessed_TabanPuan;
+
+  kontenjan_sondan_1_yil: PostProccessed_Kontenjan;
+  kontenjan_sondan_2_yil: PostProccessed_Kontenjan;
+  kontenjan_sondan_3_yil: PostProccessed_Kontenjan;
+  kontenjan_sondan_4_yil: PostProccessed_Kontenjan;
+
+  uni_turu: 'KKTC' | 'Devlet' | 'Vakıf' | 'Yabancı';
+
+  ucret_burs:
+    | '%25 indirimli'
+    | '%50 indirimli'
+    | '%75 indirimli'
+    | 'AÖ_Ücretli'
+    | 'Burslu'
+    | 'UE_Ücretli'
+    | 'Ücretli'
+    | 'Ücretsiz'
+    | 'İÖ_Ücretli';
+
+  ogretim_turu: 'Açıköğretim' | 'Uzaktan' | 'Örgün' | 'İkinci';
+
+  doluluk: 'Doldu' | 'Dolmadı' | 'Yeni';
+};
+
+type PostProcessedSearchResult = {
+  [key in Exclude<
+    ResultColumnNamesUnion,
+    keyof PostProccessed_Customs
+  >]: string;
+} & PostProccessed_Customs;
+
+const postProcessConfig_TabanBasariSirasi = {
+  validate: (value: unknown) => typeof value === 'string',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform: (value: string) => parseSiralama(value as any),
+};
+
+const postProcessConfig_YerlesenSayisi = {
+  validate: (value: unknown) => typeof value === 'string',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform: (value: string) => parseYerlesen(value as any),
+};
+
+const postProcessConfig_TabanPuan = {
+  validate: (value: unknown) => typeof value === 'string',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform: (value: string) => parseTabanPuan(value as any),
+};
+
+const postProcessConfig_Kontenjan = {
+  validate: (value: unknown) => typeof value === 'string',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform: (value: string) => parseKontenjan(value as any),
+};
+
+// Api returns three of the columns with numbers as html so need to parse them.
+// ex: <br><font color='red'>---</font><br><font color='purple'>12</font><br><font color='blue'>7</font><br><font color='green'>7</font>
+const extractStandardNumberValue = (html: string) => {
+  const yerlesenNumberMatches = html.match(/>[0-9]{1,3}|(---)?<\/font></);
+
+  if (!yerlesenNumberMatches) return null;
+
+  const yerlesenNumber = yerlesenNumberMatches[1];
+
+  if (yerlesenNumber == null) return null;
+
+  return yerlesenNumber;
+};
+
+interface PostProcessConfig<key extends keyof PostProcessedSearchResult> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  extractValuePrePostProcess?: (value: any) => any;
+  validate?: (value: unknown) => boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transform?: (value: any) => PostProcessedSearchResult[key];
+}
+
+const ResultPostProcessors: {
+  [key in Exclude<
+    ResultColumnNamesUnion,
+    keyof PostProccessed_Customs
+  >]?: PostProcessConfig<key>;
+} & {
+  [key in keyof PostProccessed_Customs]: PostProcessConfig<key>;
+} = {
+  yop_kodu: {
+    extractValuePrePostProcess: (html: string): string | null => {
+      const yopkODUMatches = html.match(/javascript:listeyeEkle\(([0-9]+)\)/);
+
+      if (!yopkODUMatches) return null;
+
+      const yopkODU = yopkODUMatches[1];
+
+      if (yopkODU == null) return null;
+
+      return yopkODU;
+    },
+    validate: (value: unknown) => typeof value === 'string',
+    transform: (value: string) => value,
+  },
+
+  uni_turu: {
+    validate: (value: unknown) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ['KKTC', 'Devlet', 'Vakıf', 'Yabancı'].includes(value as any),
+  },
+
+  ucret_burs: {
+    validate: (value: unknown) =>
+      [
+        '%25 indirimli',
+        '%50 indirimli',
+        '%75 indirimli',
+        'AÖ_Ücretli',
+        'Burslu',
+        'UE_Ücretli',
+        'Ücretli',
+        'Ücretsiz',
+        'İÖ_Ücretli',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ].includes(value as any),
+  },
+
+  ogretim_turu: {
+    validate: (value: unknown) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ['Açıköğretim', 'Uzaktan', 'Örgün', 'İkinci'].includes(value as any),
+  },
+
+  doluluk: {
+    validate: (value: unknown) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ['Doldu', 'Dolmadı', 'Yeni'].includes(value as any),
+  },
+
+  taban_basari_sirasi_sondan_1_yil: {
+    extractValuePrePostProcess: extractStandardNumberValue,
+    ...postProcessConfig_TabanBasariSirasi,
+  },
+  taban_basari_sirasi_sondan_2_yil: postProcessConfig_TabanBasariSirasi,
+  taban_basari_sirasi_sondan_3_yil: postProcessConfig_TabanBasariSirasi,
+  taban_basari_sirasi_sondan_4_yil: postProcessConfig_TabanBasariSirasi,
+
+  yerlesen_kisi_sayisi_sondan_1_yil: {
+    extractValuePrePostProcess: extractStandardNumberValue,
+    ...postProcessConfig_YerlesenSayisi,
+  },
+  yerlesen_kisi_sayisi_sondan_2_yil: postProcessConfig_YerlesenSayisi,
+  yerlesen_kisi_sayisi_sondan_3_yil: postProcessConfig_YerlesenSayisi,
+  yerlesen_kisi_sayisi_sondan_4_yil: postProcessConfig_YerlesenSayisi,
+
+  taban_puan_sondan_1_yil: {
+    extractValuePrePostProcess: extractStandardNumberValue,
+    ...postProcessConfig_TabanPuan,
+  },
+  taban_puan_sondan_2_yil: postProcessConfig_TabanPuan,
+  taban_puan_sondan_3_yil: postProcessConfig_TabanPuan,
+  taban_puan_sondan_4_yil: postProcessConfig_TabanPuan,
+
+  kontenjan_sondan_1_yil: {
+    extractValuePrePostProcess: (html: string) => {
+      const kontenjanNumberMatches = html.match(/\d{0,1000}[+]\d{0,10}/);
+
+      if (!kontenjanNumberMatches) return null;
+
+      const kontenjanNumber = kontenjanNumberMatches[0];
+
+      if (kontenjanNumber == null) return null;
+
+      return kontenjanNumber;
+    },
+    ...postProcessConfig_Kontenjan,
+  },
+  kontenjan_sondan_2_yil: postProcessConfig_Kontenjan,
+  kontenjan_sondan_3_yil: postProcessConfig_Kontenjan,
+  kontenjan_sondan_4_yil: postProcessConfig_Kontenjan,
+};
+
+const createKeyValueMap = (record: SearchResultRecord) => {
+  const keyValueMap = Object.entries(record).reduce((acc, [key, val]) => {
+    const keyName =
+      ResultColumnIndexCorrespondants[
+        key as unknown as keyof typeof ResultColumnIndexCorrespondants
+      ];
+
+    acc[keyName] = val;
+    return acc;
+  }, {} as Record<ResultColumnNamesUnion, string | number | null>);
+
+  return keyValueMap;
+};
+
+const postProcessSearchResultRecord = (
+  record: SearchResultRecord
+): PostProcessedSearchResult => {
+  const result = createKeyValueMap(record);
+
+  for (const [key, postProcessCFG] of Object.entries(ResultPostProcessors)) {
+    if (postProcessCFG == null) continue;
+
+    if (postProcessCFG.extractValuePrePostProcess) {
+      const extractionResult = postProcessCFG.extractValuePrePostProcess(
+        result[key as keyof typeof result]
+      );
+
+      result[key as keyof typeof result] = extractionResult;
+    }
+
+    if (postProcessCFG.validate) {
+      const validationResult = postProcessCFG.validate(
+        result[key as keyof typeof result]
+      );
+
+      if (!validationResult) {
+        throw new Error(`Validation of <${key}> failed`);
+      }
+    }
+
+    if (postProcessCFG.transform) {
+      const transformationResult = postProcessCFG.transform(
+        result[key as keyof typeof result]
+      );
+
+      result[key as keyof typeof result] = transformationResult;
+    }
+  }
+
+  return result as PostProcessedSearchResult;
+};
+
+const ResultColumnIndexByName = Object.entries(
+  ResultColumnIndexCorrespondants
+).reduce(
+  (acc, [key, value]) => ({ ...acc, [value.toString()]: Number(key) }),
+  {} as Record<ValueOf<typeof ResultColumnIndexCorrespondants>, number>
+);
+
+const resultColumnNames = Object.keys(ResultColumnIndexByName) as Array<
+  keyof typeof ResultColumnIndexByName
+>;
+
+type ResultColumnNamesUnion = typeof resultColumnNames[number];
+
+type SearchResultRecord = {
+  0: string;
+  1: string;
+  2: string;
+  3: string;
+  4: string;
+  5: string;
+  6: string;
+  7: string;
+  8: string;
+  9: string;
+  10: string;
+  11: string;
+  12: string;
+  13: string;
+  14: string;
+  15: string;
+  16: string;
+  17: string;
+  18: string;
+  19: string;
+  20: string;
+  21: string;
+  22: string;
+  23: string;
+  24: string;
+  25: string;
+  26: string;
+  27: string;
+  28: string;
+  29: string;
+  30: string;
+  31: string;
+  32: string;
+  33: string;
+  34: string;
+  35: string;
+  36: string;
+  37: string;
+  38: number;
+  39: number;
+  40: string;
+  41: string;
+  42: string;
+  43: string;
+  44: string;
 };
 
 // type StandardColumnSearchQuery = typeof standardColumn;
@@ -134,7 +524,7 @@ const defaultNonColumnSearchParams = {
   'search[regex]': false,
 } as const;
 
-class YOKATLAS {
+class YOKAtlasAPI {
   columns: URLSearchParams;
 
   constructor(searchParamsConfig: YOKAtlasSearchParamsConfig) {
@@ -207,93 +597,78 @@ class YOKATLAS {
     });
   }
 
-  // Api returns three of the columns with numbers as html so need to parse them.
-  // ex: <br><font color='red'>---</font><br><font color='purple'>12</font><br><font color='blue'>7</font><br><font color='green'>7</font>
-  getYerlesenNumber(html: string) {
-    const yerlesenNumberMatches = html.match(/>[0-9]{1,3}|(---)?<\/font></);
-
-    if (!yerlesenNumberMatches) return null;
-
-    const yerlesenNumber = yerlesenNumberMatches[1];
-
-    if (yerlesenNumber == null) return null;
-
-    return yerlesenNumber;
-  }
-
-  getKontenjanNumber(html: string) {
-    const kontenjanNumberMatches = html.match(/\d{0,1000}[+]\d{0,10}/);
-
-    if (!kontenjanNumberMatches) return null;
-
-    const kontenjanNumber = kontenjanNumberMatches[0];
-
-    if (kontenjanNumber == null) return null;
-
-    return kontenjanNumber;
-  }
-
-  getYOPkODU(html: string) {
-    const yopkODUMatches = html.match(/javascript:listeyeEkle\(([0-9]+)\)/);
-
-    if (!yopkODUMatches) return null;
-
-    const yopkODU = yopkODUMatches[1];
-
-    if (yopkODU == null) return null;
-
-    return yopkODU;
-  }
-
-  parseResults({ data }: { data: Array<typeof searchResultRecord> }) {
+  parseResults({
+    data,
+  }: {
+    data: Array<SearchResultRecord>;
+  }): Array<SearchResultYOProgramInfo> {
     return data.map((e) => {
-      return {
-        yop_kodu: this.getYOPkODU(e[1]),
-        uni_adi: e[41],
-        fakulte: e[3],
-        program_adi: e[42],
-        sehir_adi: e[6],
-        universite_turu: e[7],
-        ucret_burs: e[8],
-        ogretim_turu: e[9],
-        doluluk: e[14],
-        yerlesen: [this.getYerlesenNumber(e[15]), e[16], e[17], e[18]],
-        kontenjan: [this.getKontenjanNumber(e[10]), e[11], e[12], e[13]],
-        tbs: [this.getYerlesenNumber(e[19]), e[20], e[21], e[22]],
-        taban: [this.getYerlesenNumber(e[27]), e[28], e[29], e[30]],
+      const processedRecord = postProcessSearchResultRecord(e);
+
+      const parsedProgramInfo: SearchResultYOProgramInfo = {
+        universite: {
+          ad: processedRecord.uni_adi,
+          tur: processedRecord.uni_turu,
+          sehir: processedRecord.sehir_adi,
+        },
+        program: {
+          kod: processedRecord.yop_kodu,
+          fakulte: processedRecord.fakulte_adi,
+          ad: processedRecord.program_adi,
+          ucretTuru: processedRecord.ucret_burs,
+          ogretimTuru: processedRecord.ogretim_turu,
+          doluluk: processedRecord.doluluk,
+        },
+        yillaraGoreDegerler: [
+          {
+            yil: 2019,
+            kontenjan: processedRecord.kontenjan_sondan_4_yil,
+            tabanBasariSirasi: processedRecord.taban_basari_sirasi_sondan_4_yil,
+            tabanPuan: processedRecord.taban_puan_sondan_4_yil,
+            yerlesenKisiSayisi:
+              processedRecord.yerlesen_kisi_sayisi_sondan_4_yil,
+          },
+          {
+            yil: 2020,
+            kontenjan: processedRecord.kontenjan_sondan_3_yil,
+            tabanBasariSirasi: processedRecord.taban_basari_sirasi_sondan_3_yil,
+            tabanPuan: processedRecord.taban_puan_sondan_3_yil,
+            yerlesenKisiSayisi:
+              processedRecord.yerlesen_kisi_sayisi_sondan_3_yil,
+          },
+          {
+            yil: 2021,
+            kontenjan: processedRecord.kontenjan_sondan_2_yil,
+            tabanBasariSirasi: processedRecord.taban_basari_sirasi_sondan_2_yil,
+            tabanPuan: processedRecord.taban_puan_sondan_2_yil,
+            yerlesenKisiSayisi:
+              processedRecord.yerlesen_kisi_sayisi_sondan_2_yil,
+          },
+          {
+            yil: 2022,
+            kontenjan: processedRecord.kontenjan_sondan_1_yil,
+            tabanBasariSirasi: processedRecord.taban_basari_sirasi_sondan_1_yil,
+            tabanPuan: processedRecord.taban_puan_sondan_1_yil,
+            yerlesenKisiSayisi:
+              processedRecord.yerlesen_kisi_sayisi_sondan_1_yil,
+          },
+        ],
       };
+
+      return parsedProgramInfo;
     });
   }
 
-  fidgetSpinner() {
-    let indexke = 0;
-    const fidgetSpinner = this.columns.entries();
-    let devamke = true;
-    while (devamke) {
-      const e = fidgetSpinner.next();
-      if (e.done) {
-        devamke = false;
-        break;
-      }
-      indexke++;
-      const { value } = e;
-      console.log([value[0], value[1]]);
-    }
-
-    console.log(this.columns.toString());
-  }
-
   private async actuallySearch() {
-    return axios
-      .post<{ data: Array<typeof searchResultRecord> }>(
-        'https://yokatlas.yok.gov.tr/server_side/server_processing-atlas2016-TS-t4.php',
-        this.columns.toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          },
-        }
-      )
+    return YokAtlasAPI.post<{ data: Array<SearchResultRecord> }>(
+      YOK_ATLAS_ENDPOINTS.LisansTercihSihirbazi,
+      this.columns.toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        },
+      }
+    )
       .then((res) => {
         return res.data;
       })
@@ -317,4 +692,4 @@ class YOKATLAS {
   }
 }
 
-export default YOKATLAS;
+export default YOKAtlasAPI;
