@@ -30,7 +30,7 @@ type FailedSearchResult = {
   details: {
     name: string;
     searchParams: YOKAtlasSearchParamsConfig;
-    searchResult: YokAtlas_LisansTercihSihirbazi_SearchResult_Raw;
+    searchResultRaw: YokAtlas_LisansTercihSihirbazi_SearchResult_Raw;
   };
 };
 
@@ -77,7 +77,7 @@ class YOKAtlasAPI {
             details: {
               name: searchName,
               searchParams: searchParamsConfig,
-              searchResult: error.details
+              searchResultRaw: error.details
                 .searchResultRaw as YokAtlas_LisansTercihSihirbazi_SearchResult_Raw,
             },
           });
