@@ -37,6 +37,7 @@ const generateDefaultSearchColumn = (index: number) => {
 };
 
 type SearchResultYOProgramInfo = {
+  programKodu: string;
   universite: {
     ad: string;
     tur: 'KKTC' | 'Devlet' | 'Vakıf' | 'Yabancı';
@@ -496,11 +497,16 @@ export type YOKAtlasSearchParamsConfig = Partial<{
   ucret_burs: string;
   ogretim_turu: string;
   doluluk: string;
-}>;
+}> & {
+  puan_turu: 'say' | 'soz' | 'ea' | 'dil';
+};
 
 type ConfigSearchParams = keyof YOKAtlasSearchParamsConfig;
 
-const columnIndexes: Record<ConfigSearchParams, number> = {
+const columnIndexes: Record<
+  Exclude<ConfigSearchParams, 'puan_turu'>,
+  number
+> = {
   yop_kodu: 1,
   uni_adi: 2,
   program_adi: 4,
@@ -549,6 +555,8 @@ class YOKAtlasAPI {
     //     this.columns.set(`columns[${columnVars[key]}][search][value]`, _[key]);
     //   }
     // });
+
+    this.columns.set('puan_turu', searchParamsConfig.puan_turu);
 
     // Fill search params with search params config
     for (const [key, value] of Object.entries(columnIndexes)) {
@@ -606,6 +614,7 @@ class YOKAtlasAPI {
       const processedRecord = postProcessSearchResultRecord(e);
 
       const parsedProgramInfo: SearchResultYOProgramInfo = {
+        programKodu: processedRecord.yop_kodu,
         universite: {
           ad: processedRecord.uni_adi,
           tur: processedRecord.uni_turu,

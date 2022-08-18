@@ -10,6 +10,7 @@ import YOKAtlasAPI from './services/yok-atlas-api';
 const main = async () => {
   try {
     const results = await new YOKAtlasAPI({
+      puan_turu: 'say',
       sehir_adi: 'Ankara',
     }).search();
 
