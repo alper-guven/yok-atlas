@@ -45,6 +45,7 @@ type SearchResultYOProgramInfo = {
   };
   program: {
     kod: string;
+    puanTuru: 'say' | 'söz' | 'ea' | 'dil';
     fakulte: string;
     ad: string;
     ucretTuru:
@@ -498,7 +499,7 @@ export type YOKAtlasSearchParamsConfig = Partial<{
   ogretim_turu: string;
   doluluk: string;
 }> & {
-  puan_turu: 'say' | 'soz' | 'ea' | 'dil';
+  puan_turu: 'say' | 'söz' | 'ea' | 'dil';
 };
 
 type ConfigSearchParams = keyof YOKAtlasSearchParamsConfig;
@@ -533,8 +534,12 @@ const defaultNonColumnSearchParams = {
 class YOKAtlasAPI {
   columns: URLSearchParams;
 
+  private _searchParamsConfig: YOKAtlasSearchParamsConfig;
+
   constructor(searchParamsConfig: YOKAtlasSearchParamsConfig) {
     // this.columns = new URLSearchParams(columnData[0]);
+
+    this._searchParamsConfig = searchParamsConfig;
 
     const defaultSearchColumnsParams = [...Array(45)].reduce(
       (acc: Record<string, string>, _, index) => {
@@ -622,6 +627,7 @@ class YOKAtlasAPI {
         },
         program: {
           kod: processedRecord.yop_kodu,
+          puanTuru: this._searchParamsConfig['puan_turu'],
           fakulte: processedRecord.fakulte_adi,
           ad: processedRecord.program_adi,
           ucretTuru: processedRecord.ucret_burs,
