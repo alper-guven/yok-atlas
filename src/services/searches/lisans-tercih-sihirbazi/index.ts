@@ -64,14 +64,20 @@ export type YOKAtlasSearchParamsConfig = Partial<{
 const SearchParamsValidationSchema = Joi.object<YOKAtlasSearchParamsConfig>()
   .keys({
     // Optional column Params
-    YOPKodu: Joi.string().trim().optional(),
+    YOPKodu: Joi.string()
+      .length(9)
+      .regex(/^[0-9]{9}$/)
+      .trim()
+      .optional(),
     universiteAdi: Joi.string().trim().optional(),
     programAdi: Joi.string().trim().optional(),
     sehirAdi: Joi.string().trim().optional(),
     universiteTuru: Joi.string()
+      .trim()
       .allow('KKTC', 'Devlet', 'Vakıf', 'Yabancı')
       .optional(),
     ucretBurs: Joi.string()
+      .trim()
       .allow(
         '%25 indirimli',
         '%50 indirimli',
@@ -85,11 +91,12 @@ const SearchParamsValidationSchema = Joi.object<YOKAtlasSearchParamsConfig>()
       )
       .optional(),
     ogretimTuru: Joi.string()
+      .trim()
       .allow('Açıköğretim', 'Uzaktan', 'Örgün', 'İkinci')
       .optional(),
-    doluluk: Joi.string().allow('Doldu', 'Dolmadı', 'Yeni').optional(),
+    doluluk: Joi.string().trim().allow('Doldu', 'Dolmadı', 'Yeni').optional(),
     // Required column params
-    puanTuru: Joi.string().required(),
+    puanTuru: Joi.string().trim().allow('say', 'söz', 'ea', 'dil').required(),
     // Optional non-column params
     genelArama: Joi.object()
       .keys({
