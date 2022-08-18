@@ -1,10 +1,10 @@
-import { YokAtlas_LisansTercihSihirbazi_SearchResult_Raw } from '../types/yok-atlas/lisans-tercih-sihirbazi';
-import { YokAtlasSearchError } from '../utils/yok-atlas-search-error';
+import { YokAtlas_LisansTercihSihirbazi_SearchResult_Raw } from './types/yok-atlas/lisans-tercih-sihirbazi';
+import { YokAtlasSearchError } from './utils/yok-atlas-search-error';
 import {
   searchLisansTercihSihirbazi,
   YOKAtlasSearchParamsConfig,
-} from './searches/lisans-tercih-sihirbazi';
-import { SearchResultYOProgramInfo } from './searches/lisans-tercih-sihirbazi/process-search-result';
+} from './services/searches/lisans-tercih-sihirbazi';
+import { SearchResultYOProgramInfo } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
 
 // const getLisansPanelInstance = (year: 2019 | 2020 | 2021) => {
 //   return axios.create({
@@ -46,7 +46,7 @@ type FailedSearchResult =
 
 type YOKAtlasAPI_SearchResults_Failed_Union = FailedSearchResult;
 
-class YOKAtlasAPI {
+export class YOKAtlasAPI {
   previousSearchResults: Array<YOKAtlasAPI_SearchResults_Union> = [];
   failedSearchResults: Array<YOKAtlasAPI_SearchResults_Failed_Union> = [];
 

@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon",
     "lint": "eslint",
-    "build": "rimraf ./build && tsc",
-    "start": "npm run build && node build/app.js"
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js"
   },
   "keywords": [
     "YÖK",
