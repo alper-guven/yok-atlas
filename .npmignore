@@ -1,0 +1,11 @@
+src/
+test/
+
+.eslintrc
+.prettierrc
+.gitignore
+nodemon.json
+
+tsconfig.json
+
+src/services/searches/lisans-tercih-sihirbazi/example-data
