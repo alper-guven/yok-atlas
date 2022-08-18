@@ -287,7 +287,7 @@ const parseResults = (parseConfig: {
     throw new YokAtlasSearchError({
       reason: 'post-process-failed',
       error,
-      searchResultRaw: rawSearchResult,
+      responseRaw: rawSearchResult,
     });
   }
 };
@@ -313,6 +313,26 @@ const actuallySearch = async (urlSearchParams: URLSearchParams) => {
     });
 };
 
+const responseBodyValidationSchema =
+  Joi.object<YokAtlas_LisansTercihSihirbazi_SearchResult_Raw>({
+    data: Joi.array().min(0).items(Joi.array().length(45)),
+    draw: Joi.number().required(),
+    recordsFiltered: Joi.number().required(),
+    recordsTotal: Joi.number().required(),
+  }).required();
+
+const validateResponseBody = (responseBody: unknown) => {
+  const { error } = responseBodyValidationSchema.validate(responseBody);
+
+  if (error) {
+    throw new YokAtlasSearchError({
+      reason: 'response-validation-failed',
+      responseRaw: responseBody,
+      error,
+    });
+  }
+};
+
 export const searchLisansTercihSihirbazi = async (
   searchParamsConfig: YOKAtlasSearchParamsConfig
 ): Promise<Array<SearchResultYOProgramInfo>> => {
@@ -321,6 +341,8 @@ export const searchLisansTercihSihirbazi = async (
   const config = createSearchPayload(validatedSearchParamsConfig);
 
   const searchResult = await actuallySearch(config);
+
+  validateResponseBody(searchResult);
 
   const results = parseResults({
     rawSearchResult: searchResult,

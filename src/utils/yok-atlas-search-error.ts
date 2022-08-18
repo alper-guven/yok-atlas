@@ -17,10 +17,16 @@ interface YokASE_RequestError extends YokASE_ErrorBase {
   error: any;
 }
 
+interface YokASE_ResponseValidationError extends YokASE_ErrorBase {
+  reason: 'response-validation-failed';
+  error: any;
+  responseRaw: any;
+}
+
 interface YokASE_PostProcessError extends YokASE_ErrorBase {
   reason: 'post-process-failed';
   error: any;
-  searchResultRaw: any;
+  responseRaw: any;
 }
 
 interface YokASE_UnknownError extends YokASE_ErrorBase {
@@ -31,6 +37,7 @@ interface YokASE_UnknownError extends YokASE_ErrorBase {
 type YokAtlasSearchErrorDetails =
   | YokASE_RequestConfigValidationError
   | YokASE_RequestError
+  | YokASE_ResponseValidationError
   | YokASE_PostProcessError
   | YokASE_UnknownError;
 

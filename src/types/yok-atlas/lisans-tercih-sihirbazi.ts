@@ -80,5 +80,8 @@ export type SearchResultRecord = {
 };
 
 export interface YokAtlas_LisansTercihSihirbazi_SearchResult_Raw {
-  data: Array<SearchResultRecord>;
+  data: Array<SearchResultRecord>; // Actual data is an Array of <Array consisting 45 entries>
+  draw: number; // number of filtering operations made on current session
+  recordsFiltered: number; // total number of records on search result
+  recordsTotal: number; // total number of records (say - söz - ea - dil)
 }

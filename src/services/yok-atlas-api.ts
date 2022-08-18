@@ -24,15 +24,25 @@ type PreviousSearchResult = {
 
 type YOKAtlasAPI_SearchResults_Union = PreviousSearchResult;
 
-type FailedSearchResult = {
-  searchType: 'lisans-tercih-sihirbazi';
-  failReason: 'post-process-failed';
-  details: {
-    name: string;
-    searchParams: YOKAtlasSearchParamsConfig;
-    searchResultRaw: YokAtlas_LisansTercihSihirbazi_SearchResult_Raw;
-  };
-};
+type FailedSearchResult =
+  | {
+      searchType: 'lisans-tercih-sihirbazi';
+      failReason: 'post-process-failed';
+      details: {
+        name: string;
+        searchParams: YOKAtlasSearchParamsConfig;
+        searchResultRaw: YokAtlas_LisansTercihSihirbazi_SearchResult_Raw;
+      };
+    }
+  | {
+      searchType: 'lisans-tercih-sihirbazi';
+      failReason: 'response-validation-failed';
+      details: {
+        name: string;
+        searchParams: YOKAtlasSearchParamsConfig;
+        searchResultRaw: unknown;
+      };
+    };
 
 type YOKAtlasAPI_SearchResults_Failed_Union = FailedSearchResult;
 
@@ -78,7 +88,21 @@ class YOKAtlasAPI {
               name: searchName,
               searchParams: searchParamsConfig,
               searchResultRaw: error.details
-                .searchResultRaw as YokAtlas_LisansTercihSihirbazi_SearchResult_Raw,
+                .responseRaw as YokAtlas_LisansTercihSihirbazi_SearchResult_Raw,
+            },
+          });
+
+          throw error;
+        }
+
+        if (error.details.reason === 'response-validation-failed') {
+          this.failedSearchResults.push({
+            searchType: 'lisans-tercih-sihirbazi',
+            failReason: 'response-validation-failed',
+            details: {
+              name: searchName,
+              searchParams: searchParamsConfig,
+              searchResultRaw: error.details.responseRaw,
             },
           });
 
