@@ -1,7 +1,7 @@
 {
   "name": "yok-atlas",
   "version": "1.0.0",
-  "description": "",
+  "description": "Unofficial YÖK Atlas API Wrapper",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
@@ -17,6 +17,14 @@
     "YÖK Atlas Tercih Sihirbazı"
   ],
   "author": "Alper Güven <alper.guven.11@gmail.com> (https://alper.codes/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alper-guven/yok-atlas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alper-guven/yok-atlas/issues"
+  },
+  "homepage": "https://github.com/alper-guven/yok-atlas#readme",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.27.2",
