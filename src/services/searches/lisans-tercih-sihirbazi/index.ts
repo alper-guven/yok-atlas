@@ -12,7 +12,7 @@ import {
 } from '../../../types/yok-atlas/lisans-tercih-sihirbazi';
 import { YokAtlasSearchError } from '../../../utils/yok-atlas-search-error';
 import {
-  SearchResultYOProgramInfo,
+  LisansTercihSearchResultRecord,
   postProcessSearchResultRecord,
 } from './process-search-result';
 
@@ -222,14 +222,14 @@ const createSearchPayload = (
 const parseResults = (parseConfig: {
   rawSearchResult: YokAtlas_LisansTercihSihirbazi_SearchResult_Raw;
   searchParamsConfig: YOKAtlasSearchParamsConfig;
-}): Array<SearchResultYOProgramInfo> => {
+}): Array<LisansTercihSearchResultRecord> => {
   const { rawSearchResult, searchParamsConfig } = parseConfig;
 
   try {
     return rawSearchResult.data.map((singleResultRecord) => {
       const processedRecord = postProcessSearchResultRecord(singleResultRecord);
 
-      const parsedProgramInfo: SearchResultYOProgramInfo = {
+      const parsedProgramInfo: LisansTercihSearchResultRecord = {
         programKodu: processedRecord.yop_kodu,
         universite: {
           ad: processedRecord.uni_adi,
@@ -333,9 +333,11 @@ const validateResponseBody = (responseBody: unknown) => {
   }
 };
 
+export type LisansTercihSearchResults = Array<LisansTercihSearchResultRecord>;
+
 export const searchLisansTercihSihirbazi = async (
   searchParamsConfig: YOKAtlasSearchParamsConfig
-): Promise<Array<SearchResultYOProgramInfo>> => {
+): Promise<LisansTercihSearchResults> => {
   const validatedSearchParamsConfig = validateSearchParams(searchParamsConfig);
 
   const config = createSearchPayload(validatedSearchParamsConfig);

@@ -68,7 +68,7 @@ const ResultColumnIndexCorrespondents = {
   44: 'x--44',
 } as const;
 
-export type SearchResultYOProgramInfo = {
+export type LisansTercihSearchResultRecord = {
   programKodu: string;
   universite: {
     ad: string;
@@ -104,7 +104,7 @@ export type SearchResultYOProgramInfo = {
 
 const parseTabanPuan = (
   virgulluPuan: '---' | 'Dolmadı' | `${string},${string}`
-): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['tabanPuan'] => {
+): LisansTercihSearchResultRecord['yillaraGoreDegerler'][number]['tabanPuan'] => {
   if (virgulluPuan === '---') {
     return null;
   }
@@ -118,7 +118,7 @@ const parseTabanPuan = (
 
 const parseSiralama = (
   noktaliSiralama: '---' | 'Dolmadı' | `${string}.${string}`
-): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['tabanBasariSirasi'] => {
+): LisansTercihSearchResultRecord['yillaraGoreDegerler'][number]['tabanBasariSirasi'] => {
   if (noktaliSiralama === '---') {
     return null;
   }
@@ -132,7 +132,7 @@ const parseSiralama = (
 
 const parseYerlesen = (
   yerlesen: `${number}` | '---'
-): SearchResultYOProgramInfo['yillaraGoreDegerler'][number]['yerlesenKisiSayisi'] => {
+): LisansTercihSearchResultRecord['yillaraGoreDegerler'][number]['yerlesenKisiSayisi'] => {
   if (yerlesen === '---') {
     return null;
   }

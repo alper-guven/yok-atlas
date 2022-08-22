@@ -4,7 +4,11 @@ import {
   searchLisansTercihSihirbazi,
   YOKAtlasSearchParamsConfig,
 } from './services/searches/lisans-tercih-sihirbazi';
-import { SearchResultYOProgramInfo } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
+import { LisansTercihSearchResultRecord } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
+
+// * Export Lisans Tercih Sihirbazi search result types
+export { LisansTercihSearchResults } from './services/searches/lisans-tercih-sihirbazi';
+export { LisansTercihSearchResultRecord } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
 
 // const getLisansPanelInstance = (year: 2019 | 2020 | 2021) => {
 //   return axios.create({
@@ -18,7 +22,7 @@ type PreviousSearchResult = {
   details: {
     name: string;
     searchParams: YOKAtlasSearchParamsConfig;
-    searchResults: Array<SearchResultYOProgramInfo>;
+    searchResults: Array<LisansTercihSearchResultRecord>;
   };
 };
 
@@ -55,7 +59,7 @@ export class YOKAtlasAPI {
     searchIdentityConfig?: {
       searchName: string;
     }
-  ): Promise<Array<SearchResultYOProgramInfo>> {
+  ): Promise<Array<LisansTercihSearchResultRecord>> {
     // Save search results to previous searches
     const _searchNameFromConfig = searchIdentityConfig
       ? searchIdentityConfig.searchName

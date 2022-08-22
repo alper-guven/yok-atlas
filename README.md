@@ -9,9 +9,14 @@ An API wrapper for [YÖK Atlas](https://yokatlas.yok.gov.tr/)
 
 Have questions? [Contact Me](https://twitter.com/alper_guven_)!
 
+
+
 ![npm](https://img.shields.io/npm/dm/yok-atlas?style=for-the-badge) 
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://choosealicense.com/licenses/mit/)
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/alperguven)
+
 ## Installation
 
 Install [yok-atlas](https://www.npmjs.com/package/yok-atlas) with npm
@@ -31,9 +36,9 @@ Type definitions? Included!
 ## Features
 
 - Search by any criteria on [YÖK Atlas - Lisans Tercih Sihirbazı](https://yokatlas.yok.gov.tr/tercih-sihirbazi-t4-tablo.php?p=say)
-- TYPES! Search criterias such as **Üniversite Türü** | **Ücret/Burs** | **Öğretim Türü** etc all have type definitions. So you will get suggestions on your editor!
+- TYPES! Search criterias such as `Üniversite Türü` | `Ücret/Burs` | `Öğretim Türü` etc all have type definitions. So you will get suggestions on your editor!
 - Your search configuration gets validated
-- You can name your searches! Give a name to your search such as "Bilgisayar Mühendisliği - Örgün" and find it later by it's name later by searching in previous results!
+- You can name your searches! Give a name to your search such as `Bilgisayar Mühendisliği - Örgün` and find it later by it's name later by searching in previous results!
 - API response gets validated before parsing / formatting.
 - Result properties gets validated & formatted.
 - Any validation / formatting error causes further processing to stop.
@@ -48,7 +53,7 @@ All happens under the hood. Just search and you will get nicely formatted, valid
 
 ## Roadmap
 
-- [x]  Release initial Version as 1.0.0 with only **Lisans Tercih Sihirbazı** search support
+- [x]  ~~Release initial Version as 1.0.0 with only **Lisans Tercih Sihirbazı** search support~~
 - [ ]  Expose an API to extend query types of **YÖK Atlas (this package)**   
 - [ ]  Add [program (YOP)](https://yokatlas.yok.gov.tr/lisans.php?y=108410336) specific queries like **Yerleşenlerin Cinsiyet Dağılımı** | **Yerleşenlerin Geldikleri İller** | **Yerleşme Koşulları** 
 - [ ]  Aggregate all kind of search results into a single view & make this view queriable
@@ -93,12 +98,18 @@ var YOKAtlasAPI = require('yok-atlas').YOKAtlasAPI;
 ```
 ## Usage
 
+First of all, import the package.
 ```typescript
 import { YOKAtlasAPI } from 'yok-atlas';
+```
 
+Create a new instance:
+```typescript
 const yokAtlasAPI = new YOKAtlasAPI();
+```
 
-// Make a search and get the results as array
+Make a search and get the results as an array:
+```typescript
 const results = await yokAtlasAPI.searchLisansTercihSihirbazi(
   {
     puanTuru: 'say',
@@ -111,8 +122,10 @@ const results = await yokAtlasAPI.searchLisansTercihSihirbazi(
     searchName: `Ankara - Bilgisayar Mühendisliği - Örgün`,
   }
 );
+```
 
-// Loop through search results to list "taban başarı puanı" for year 2021
+Loop through search results to list "taban başarı puanı" for year 2021:
+```typescript
 for (const entry of results) {
   console.log(`---------- ${entry.program.kod} ----------`);
   console.log(
@@ -123,8 +136,13 @@ for (const entry of results) {
     entry.yillaraGoreDegerler.find((x) => x.yil === 2021)!.tabanBasariSirasi
   );
 }
+```
 
-// Make another search
+Make another search:
+
+> NOTE: If you will make multiple searches, catch each of them to avoid breaking the complete flow.
+
+```typescript
 const anotherSearchResult = await yokAtlasAPI.searchLisansTercihSihirbazi(
   {
     puanTuru: 'söz',
@@ -136,9 +154,12 @@ const anotherSearchResult = await yokAtlasAPI.searchLisansTercihSihirbazi(
   {
     searchName: `İstanbul'daki Vakıf Üniversitelerinin Burslu Sözel Lisans Programları`,
   }
-);
+).catch(error => console.log(error))
 
-// Just make a search to use its results when you need it
+```
+
+Just make a search to use its results when you need it:
+```typescript
 await yokAtlasAPI.searchLisansTercihSihirbazi(
   {
     puanTuru: 'dil',
@@ -149,44 +170,56 @@ await yokAtlasAPI.searchLisansTercihSihirbazi(
     searchName: `Devlet Üniversitelerinin İngilizce ile alakalı Lisans Programları`,
   }
 );
+```
 
-console.log(
-  '########### Find My Search: "Ankara - Bilgisayar Mühendisliği - Örgün"  ###########'
-);
+Find your previous search named: "Ankara - Bilgisayar Mühendisliği - Örgün":
+```typescript
 const ankaraOrgunBilgisayarMuh = yokAtlasAPI.previousSearchResults.find(
   (x) => x.details.name === `Ankara - Bilgisayar Mühendisliği - Örgün`
 );
+```
 
+Find ODTÜ's programs in your previous search:
+```typescript
 if (ankaraOrgunBilgisayarMuh) {
-  // Find ODTÜ's programs
   const odtuBilgisayarProgramlari =
     ankaraOrgunBilgisayarMuh.details.searchResults
       .map((x) => (x.universite.ad.includes('ORTA DOĞU') ? x : null))
       .filter((x) => x != null);
 
-  if (odtuBilgisayarProgramlari) {
-    console.log(
-      odtuBilgisayarProgramlari.map((x) => x && x.program.ad).join(', ')
-    );
+  if (odtuBilgisayarProgramlari.length > 0) {
+    const programNamesFound = odtuBilgisayarProgramlari.map((x) => x && x.program.ad).join(', ')
   }
 }
-
-console.log('########### Previous Results ###########');
-console.log(yokAtlasAPI.previousSearchResults);
-
-console.log(
-  '########### Previous Failed Searches (Failed to parse or validate) ###########'
-);
-console.log(yokAtlasAPI.failedSearchResults);
-
-
 ```
+
+Access previous successful search results:
+```typescript
+const myPreviousSearchResulsts = yokAtlasAPI.previousSearchResults;
+```
+
+Access previous failed searches (Failed to parse or validate)
+
+> NOTE: If the request itself fails, it's not added to the failed searches.
+
+> NOTE: You still need to expect & catch errors per search you made since it will throw an error either it is network requst fail, failed to parse or validate. 
+
+```typescript
+const myFailedSearchResults = yokAtlasAPI.failedSearchResults;
+```
+
 ## Type Definition of Search Results
+
+You can import the provided types for search results of `Lisans Tercih Sihirbazı`
+
+```typescript
+import { LisansTercihSearchResults, LisansTercihSearchResultRecord } from 'yok-atlas';
+```
 
 You will get the result in this format:
 
 ```typescript
-type SearchResultYOProgramInfo = {
+type LisansTercihSearchResultRecord = {
   programKodu: string;
   universite: {
     ad: string;
@@ -220,14 +253,16 @@ type SearchResultYOProgramInfo = {
   }>;
 };
 
-type SearchResults = Array<SearchResultYOProgramInfo>; 
+type LisansTercihSearchResults = Array<LisansTercihSearchResultRecord>; 
 
-const sayisalSearchResult: SearchResults = new YOKAtlasAPI().searchLisansTercihSihirbazi(
+const sayisalSearchResult: LisansTercihSearchResults = new YOKAtlasAPI().searchLisansTercihSihirbazi(
   {
     puanTuru: 'say',
     ogretimTuru: 'Örgün',
   }
 );
+
+const firstResult: LisansTercihSearchResultRecord = yokAtlasAPI.previousSearchResults[0].details.searchResults[0];
 
 ```
 
