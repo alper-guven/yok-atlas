@@ -1,6 +1,6 @@
 import { TurkiyeSehirIsimleri } from '../../../types/turkiye';
 import { UniversiteTuru, UcretBurs, OgretimTuru, Doluluk, PuanTuru } from '../../../types/yok-atlas/lisans-tercih-sihirbazi';
-import { SearchResultYOProgramInfo } from './process-search-result';
+import { LisansTercihSearchResultRecord } from './process-search-result';
 export declare type YOKAtlasSearchParamsConfig = Partial<{
     YOPKodu: string;
     universiteAdi: string;
@@ -17,4 +17,5 @@ export declare type YOKAtlasSearchParamsConfig = Partial<{
         isRegex?: boolean;
     };
 };
-export declare const searchLisansTercihSihirbazi: (searchParamsConfig: YOKAtlasSearchParamsConfig) => Promise<Array<SearchResultYOProgramInfo>>;
+export declare type LisansTercihSearchResults = Array<LisansTercihSearchResultRecord>;
+export declare const searchLisansTercihSihirbazi: (searchParamsConfig: YOKAtlasSearchParamsConfig) => Promise<LisansTercihSearchResults>;

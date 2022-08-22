@@ -1,6 +1,6 @@
 import { ValueOf } from '../../../types/util';
 import { Doluluk, OgretimTuru, SearchResultRecord, UcretBurs, UniversiteTuru } from '../../../types/yok-atlas/lisans-tercih-sihirbazi';
-export declare type SearchResultYOProgramInfo = {
+export declare type LisansTercihSearchResultRecord = {
     programKodu: string;
     universite: {
         ad: string;

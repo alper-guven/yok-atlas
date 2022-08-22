@@ -1,12 +1,14 @@
 import { YokAtlas_LisansTercihSihirbazi_SearchResult_Raw } from './types/yok-atlas/lisans-tercih-sihirbazi';
 import { YOKAtlasSearchParamsConfig } from './services/searches/lisans-tercih-sihirbazi';
-import { SearchResultYOProgramInfo } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
+import { LisansTercihSearchResultRecord } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
+export { LisansTercihSearchResults } from './services/searches/lisans-tercih-sihirbazi';
+export { LisansTercihSearchResultRecord } from './services/searches/lisans-tercih-sihirbazi/process-search-result';
 declare type PreviousSearchResult = {
     searchType: 'lisans-tercih-sihirbazi';
     details: {
         name: string;
         searchParams: YOKAtlasSearchParamsConfig;
-        searchResults: Array<SearchResultYOProgramInfo>;
+        searchResults: Array<LisansTercihSearchResultRecord>;
     };
 };
 declare type YOKAtlasAPI_SearchResults_Union = PreviousSearchResult;
@@ -33,6 +35,6 @@ export declare class YOKAtlasAPI {
     failedSearchResults: Array<YOKAtlasAPI_SearchResults_Failed_Union>;
     searchLisansTercihSihirbazi(searchParamsConfig: YOKAtlasSearchParamsConfig, searchIdentityConfig?: {
         searchName: string;
-    }): Promise<Array<SearchResultYOProgramInfo>>;
+    }): Promise<Array<LisansTercihSearchResultRecord>>;
 }
 export default YOKAtlasAPI;
